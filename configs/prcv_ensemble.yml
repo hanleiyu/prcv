@@ -1,0 +1,74 @@
+MODEL:
+  PRETRAIN_CHOICE: 'self'
+  PRETRAIN_PATH: 'pretrained_model/resnet101_ibn_a.pth.tar'
+  MODEL_TYPE: 'big'
+  METRIC_LOSS_TYPE: 'triplet'
+  ID_LOSS_WEIGHT: 1.0
+  TRIPLET_LOSS_WEIGHT: 1.0
+  CCSC_LOSS_WEIGHT: 1.0
+  IF_LABELSMOOTH: 'on'
+  NAME: "resnet101_ibn_a se_resnet101_ibn_a resnext101_ibn_a hrnet32"
+  POOLING_METHOD: 'GeM'
+  ID_LOSS_TYPE: 'circle'
+  DEVICE_ID: ('5')
+
+INPUT:
+  SIZE_TRAIN: [384, 128]
+  SIZE_TEST: [384, 128]
+  PROB: 0.5 # random horizontal flip
+  RE_PROB: 0.5 # random erasing
+  PADDING: 10
+
+DATASETS:
+  TRAIN: ('prcv',)
+  TEST: ('prcv',)
+  ROOT_DIR: ('/home/yhl/data')
+
+DATALOADER:
+  SAMPLER: 'softmax_triplet'
+  NUM_INSTANCE: 4
+  NUM_WORKERS: 8
+
+SOLVER:
+  FP16: True
+  LR_SCHEDULER: 'warmup_multi_step'
+  OPTIMIZER_NAME: 'Ranger'
+  MARGIN: 0.3
+  HARD_EXAMPLE_MINING_METHOD: 'batch_hard'
+  WARMUP_ITERS: 10
+  WARMUP_FACTOR: 0.01
+  GAMMA: 0.1
+
+  MAX_EPOCHS: 70
+  BASE_LR: 0.006
+
+  STEPS: [30, 50]
+
+  BIAS_LR_FACTOR: 1
+  WEIGHT_DECAY: 0.0005
+  WEIGHT_DECAY_BIAS: 0.0005
+
+  # training batch size
+  IMS_PER_BATCH: 96
+
+  LOG_PERIOD: 50
+  EVAL_PERIOD: 20
+  CHECKPOINT_PERIOD: 20
+
+  COSINE_MARGIN: 0.35
+  COSINE_SCALE: 64
+
+TEST:
+  IMS_PER_BATCH: 128
+  WEIGHT: output/prcv20/bs-submit1/ensemble.pth
+  #WEIGHT: "output/prcv20/bs-v1/final.pth output/prcv20/bs-se-v1/final.pth output/prcv20/bs-resnetxt-v1/final.pth output/prcv20/bs-hrnet-v1/final.pth output/prcv20/bs-haa/model_0008799.pth"
+  #WEIGHT: "output/prcv20/bs/best.pth output/prcv20/bs-se/best.pth output/prcv20/bs-resnetxt/best.pth output/prcv20/bs-hrnet32/best.pth"
+  NECK_FEAT: 'after'
+  FEAT_NORM: 'yes'
+  FLIP_TEST: True
+  DO_RERANK: False
+  #QUERY_EXPANSION: True
+  WRITE_RESULT: True
+
+OUTPUT_DIR: "./output/prcv20/bs-submit1"
+

@@ -1,0 +1,75 @@
+MODEL:
+  PRETRAIN_CHOICE: 'imagenet'
+  PRETRAIN_PATH: '/home/yhl/.torch/models/resnet101_ibn_a.pth.tar'
+  MODEL_TYPE: 'baseline'
+  METRIC_LOSS_TYPE: 'triplet'
+  ID_LOSS_WEIGHT: 1.0
+  TRIPLET_LOSS_WEIGHT: 1.0
+  CCSC_LOSS_WEIGHT: 1.0
+  IF_LABELSMOOTH: 'on'
+  NAME: 'resnet101_ibn_a'
+  POOLING_METHOD: 'GeM'
+  ID_LOSS_TYPE: 'circle'
+  DEVICE_ID: ('0')
+
+INPUT:
+  SIZE_TRAIN: [256, 128]
+  SIZE_TEST: [256, 128]
+  PROB: 0.5 # random horizontal flip
+  RE_PROB: 0.5 # random erasing
+  PADDING: 10
+  RANDOM_PATCH_PROB: 0.5  # useful
+  COLORJIT_PROB: 1.0
+  RANDOM_AFFINE_PROB: 1.0
+
+DATASETS:
+  TRAIN: ('VC',)
+  TEST: ('VC',)
+  ROOT_DIR: ('/home/yhl/data/')
+
+DATALOADER:
+  SAMPLER: 'softmax_triplet'
+  NUM_INSTANCE: 4
+  NUM_WORKERS: 8
+
+SOLVER:
+  FP16: True
+  LR_SCHEDULER: 'warmup_multi_step'
+  OPTIMIZER_NAME: 'Ranger'
+  MARGIN: 1.2    # useful
+  HARD_EXAMPLE_MINING_METHOD: 'batch_hard'
+  WARMUP_ITERS: 10
+  WARMUP_FACTOR: 0.01
+  GAMMA: 0.1
+
+  MAX_EPOCHS: 60
+  BASE_LR: 0.006
+
+  STEPS: [25, 40]
+
+  BIAS_LR_FACTOR: 1
+  WEIGHT_DECAY: 0.0005
+  WEIGHT_DECAY_BIAS: 0.0005
+
+  # training batch size
+  IMS_PER_BATCH: 96
+
+  LOG_PERIOD: 50
+  EVAL_PERIOD: 10
+  CHECKPOINT_PERIOD: 20
+
+  COSINE_MARGIN: 0.35
+  COSINE_SCALE: 64
+
+TEST:
+  IMS_PER_BATCH: 128
+  #WEIGHT: "output/naic/bs/final.pth"
+  NECK_FEAT: 'after'
+  FEAT_NORM: 'yes'
+  FLIP_TEST: True
+  DO_RERANK: False
+  QUERY_EXPANSION: False
+  WRITE_RESULT: True
+
+OUTPUT_DIR: "/home/yhl/log/reid_strong_baseline/vc"
+
