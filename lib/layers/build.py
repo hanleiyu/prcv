@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .triplet_loss import TripletLoss, CrossEntropyLabelSmooth
-from .metric_learning import ContrastiveLoss,CameraInvariantLoss
+from .metric_learning import ContrastiveLoss
 
 def make_loss(cfg, num_classes):    # modified by gu
 
@@ -23,7 +23,7 @@ def make_loss(cfg, num_classes):    # modified by gu
         print('got unsupported metric loss type {}'.format(
             cfg.MODEL.METRIC_LOSS_TYPE))
 
-    ccsc_loss_func = CameraInvariantLoss(metric='dual')
+    # ccsc_loss_func = CameraInvariantLoss(metric='dual')
 
     if cfg.MODEL.IF_LABELSMOOTH == 'on':
         id_loss_func = CrossEntropyLabelSmooth(num_classes=num_classes)     # new add by luo
